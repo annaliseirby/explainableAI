@@ -3,17 +3,6 @@ import sys
 import time
 
 from cozmo import faces
-# from faces import *
-# import faces
-
-# try:
-#     from termcolor import colored, cprint
-#     from pynput.keyboard import Key, Listener
-#     import speech_recognition as sr
-# except ImportError:
-#     sys.exit('some packages are required, install them doing: `pip3 install --user termcolor SpeechRecognition PyAudio Pynput` to run this script.\nIf you are on linux do: `sudo apt-get install flac portaudio19-dev python-all-dev python3-all-dev && sudo pip3 install Pynput pyaudio`')
-#
-# from . import voice_commands
 
 """
 Annalise Irby and Divya Srivastava
@@ -24,10 +13,6 @@ Code modified from example:
 https://github.com/anki/cozmo-python-sdk/blob/master/src/cozmo/faces.py
 
 """
-
-# def react(robot: cozmo.robot.Robot,
-# 			world: cozmo.world.World,
-# 			triggers: cozmo.anim.Triggers):
 
 async def react(robot: cozmo.robot.Robot):
 	"""
@@ -50,8 +35,6 @@ async def react(robot: cozmo.robot.Robot):
 
 	while True:
 
-		print(state)
-
 		########## INITIAL CHECKS ##########
 
 		# if key:  # check for voice input (from computer microphone)
@@ -61,6 +44,8 @@ async def react(robot: cozmo.robot.Robot):
 			state = "finding face"
 
 		########## STATE MACHINE ##########
+
+		print(state)
 
 		if state is "finding face":
 
@@ -97,14 +82,16 @@ async def react(robot: cozmo.robot.Robot):
 			print("face is ", any_face)
 
 			robot.stop_all_motors()
-			expression = any_face.expression()
-			print("expression is ", faces.Face.expression.__get__(expression))
+			# expression = faces.Face.expression()
+			expression = any_face.expression
+			# print("expression is ", faces.Face.expression.__get__(expression))
+			print("expression is ", expression)
 
-			if expression is FACIAL_EXPRESSION_SAD:
+			if expression is "sad":
 				state = "reacting to sad face"
-			elif expression is FACIAL_EXPRESSION_ANGRY:
+			elif expression is "angry":
 				state = "reacting to sad face"
-			elif expression is FACIAL_EXPRESSION_HAPPY:
+			elif expression is "happy":
 				state = "reacting to happy face"
 
 		elif state is "reacting to sad face":
@@ -124,12 +111,20 @@ async def react(robot: cozmo.robot.Robot):
 			reaction = robot.play_anim_trigger(triggers.CodeLabScaredCozmo)
 			await(reaction.wait_for_completed())
 
+			time.sleep(500)
+			state = "watching face"
+
 		elif state is "reacting to happy face":
 
 			explanation = "You seemed happy, so I'm celebrating!"
 
-			reaction = robot.play_anim_trigger(triggers.CodeLabPartyTime)
+			reaction = robot.play_anim_trigger(cozmo.anim.Triggers.CodeLabPartyTime)
 			await(reaction.wait_for_completed())
+
+			break
+
+			time.sleep(500)
+			state = "watching face"
 
 		elif state is "explaining":
 
