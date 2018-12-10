@@ -1,6 +1,7 @@
 import cozmo
 import sys
 import time
+from pynput.keyboard import Key, Listener
 
 from cozmo import faces
 
@@ -13,6 +14,9 @@ Code modified from example:
 https://github.com/anki/cozmo-python-sdk/blob/master/src/cozmo/faces.py
 
 """
+# method from pynput.keyboard which logs a button press
+# def on_press(key):
+# 	print('{0} pressed'.format(key))
 
 async def react(robot: cozmo.robot.Robot):
 	"""
@@ -33,12 +37,20 @@ async def react(robot: cozmo.robot.Robot):
 	explanation = "I'm just chilling."
 	any_face = None
 
+	def on_press(key):
+		#print('{0} release'.format(key))
+		if key == Key.shift_l or key == Key.shift_r:
+			#listen(robot)
+			state = "explaining"
+
 	while True:
 
 		########## INITIAL CHECKS ##########
 
-		# if key:  # check for voice input (from computer microphone)
-		# 	state = "explaining"
+		# check for key input
+		# later, check for voice input (from computer microphone)
+		listener = Listener(on_press=on_press)
+		listener.join()
 
 		if not face_visible:
 			state = "finding face"
@@ -99,24 +111,24 @@ async def react(robot: cozmo.robot.Robot):
 
 		elif state is "reacting to sad face":
 
-			explanation = "You seemed sad, so I'm trying to cheer you up."
+			explanation = "You seemed sad, so I'm sad too."
 
-			reaction = robot.play_anim_trigger(cozmo.anim.Triggers.DanceMambo)
+			reaction = robot.play_anim_trigger(cozmo.anim.Triggers.CodeLabDejected)
 			await(reaction.wait_for_completed())
 			print("tried to cheer you up")
 
-			# time.sleep(200)
+			time.sleep(200)
 			state = "watching face"
 
 		elif state is "reacting to angry face":
 
-			explanation = "You seemed angry, so I'm giving you some space."
+			explanation = "You seemed angry, so I'm angry too."
 
-			reaction = robot.play_anim_trigger(cozmo.anim.Triggers.CodeLabScaredCozmo)
+			reaction = robot.play_anim_trigger(cozmo.anim.Triggers.CodeLabFrustrated)
 			await(reaction.wait_for_completed())
 			print("ran away")
 
-			# time.sleep(200)
+			time.sleep(200)
 			state = "watching face"
 
 		elif state is "reacting to happy face":
@@ -127,7 +139,7 @@ async def react(robot: cozmo.robot.Robot):
 			await(reaction.wait_for_completed())
 			print("did a happy dance")
 
-			# time.sleep(200)
+			time.sleep(200)
 			state = "watching face"
 
 		elif state is "explaining":
