@@ -30,7 +30,7 @@ async def react(robot: cozmo.robot.Robot):
 
 	state = "finding face"
 	face_visible = False
-	explanation = "I'm trying to find a face."
+	explanation = "I'm just chilling."
 	any_face = None
 
 	while True:
@@ -49,13 +49,13 @@ async def react(robot: cozmo.robot.Robot):
 
 		if state is "init":
 
-			explanation = "I'm just getting started."
+			# explanation = "I'm just getting started."
 			robot.set_head_angle(cozmo.robot.MAX_HEAD_ANGLE).wait_for_completed()
 			robot.move_lift(-3)
 
 		if state is "finding face":
 
-			explanation = "I'm trying to find a face."
+			# explanation = "I'm trying to find a face."
 			any_face = None
 			print("Looking for a face!")
 			look_around = robot.start_behavior(cozmo.behavior.BehaviorTypes.FindFaces)
@@ -79,8 +79,8 @@ async def react(robot: cozmo.robot.Robot):
 				state = "watching face"
 
 		elif state is "watching face":
-
-			explanation = "I'm just staying alert."
+#
+			# explanation = "I'm just staying alert."
 
 			print("face is ", any_face)
 
@@ -101,20 +101,22 @@ async def react(robot: cozmo.robot.Robot):
 
 			explanation = "You seemed sad, so I'm trying to cheer you up."
 
-			reaction = robot.play_anim_trigger(triggers.DanceMambo)
+			reaction = robot.play_anim_trigger(cozmo.anim.Triggers.DanceMambo)
 			await(reaction.wait_for_completed())
+			print("tried to cheer you up")
 
-			time.sleep(500)
+			# time.sleep(200)
 			state = "watching face"
 
 		elif state is "reacting to angry face":
 
 			explanation = "You seemed angry, so I'm giving you some space."
 
-			reaction = robot.play_anim_trigger(triggers.CodeLabScaredCozmo)
+			reaction = robot.play_anim_trigger(cozmo.anim.Triggers.CodeLabScaredCozmo)
 			await(reaction.wait_for_completed())
+			print("ran away")
 
-			time.sleep(500)
+			# time.sleep(200)
 			state = "watching face"
 
 		elif state is "reacting to happy face":
@@ -123,10 +125,9 @@ async def react(robot: cozmo.robot.Robot):
 
 			reaction = robot.play_anim_trigger(cozmo.anim.Triggers.CodeLabPartyTime)
 			await(reaction.wait_for_completed())
+			print("did a happy dance")
 
-			break
-
-			time.sleep(500)
+			# time.sleep(200)
 			state = "watching face"
 
 		elif state is "explaining":
@@ -154,35 +155,5 @@ async def react(robot: cozmo.robot.Robot):
 #         return 'I said "' + entire_message + '"!'
 #
 #     return "Error: no message!"
-
-# async def look(robot:cozmo.robot.Robot):
-# def look(self, cmd_args = None):
-
-	# any_face = None
-	# print("Looking for a face...")
-	# robot.set_head_angle(cozmo.robot.MAX_HEAD_ANGLE).wait_for_completed()
-	# robot.move_lift(-3)
-	# look_around = robot.start_behavior(cozmo.behavior.BehaviorTypes.FindFaces)
-	#
-	# try:
-	#     any_face = robot.world.wait_for_observed_face(timeout=30)
-	#
-	# except asyncio.TimeoutError:
-	#     print("Didn't find anyone :-(")
-	#
-	# finally:
-	#     # whether we find it or not, we want to stop the behavior
-	#     look_around.stop()
-	#
-	# if any_face is None:
-	#     robot.play_anim_trigger(cozmo.anim.Triggers.MajorFail).wait_for_completed()
-	#     return any_face, False
-	#
-	# print("Yay, found someone!")
-	#
-	# anim = robot.play_anim_trigger(cozmo.anim.Triggers.LookInPlaceForFacesBodyPause)
-	# anim.wait_for_completed()
-	# return any_face, True
-
 
 cozmo.run_program(react, use_viewer=True, force_viewer_on_top=True)
