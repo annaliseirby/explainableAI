@@ -47,14 +47,17 @@ async def react(robot: cozmo.robot.Robot):
 
 		print(state)
 
+		if state is "init":
+
+			explanation = "I'm just getting started."
+			robot.set_head_angle(cozmo.robot.MAX_HEAD_ANGLE).wait_for_completed()
+			robot.move_lift(-3)
+
 		if state is "finding face":
 
 			explanation = "I'm trying to find a face."
-
 			any_face = None
 			print("Looking for a face!")
-			robot.set_head_angle(cozmo.robot.MAX_HEAD_ANGLE).wait_for_completed()
-			robot.move_lift(-3)
 			look_around = robot.start_behavior(cozmo.behavior.BehaviorTypes.FindFaces)
 
 			try:
@@ -82,17 +85,17 @@ async def react(robot: cozmo.robot.Robot):
 			print("face is ", any_face)
 
 			robot.stop_all_motors()
-			# expression = faces.Face.expression()
 			expression = any_face.expression
-			# print("expression is ", faces.Face.expression.__get__(expression))
 			print("expression is ", expression)
 
 			if expression is "sad":
 				state = "reacting to sad face"
 			elif expression is "angry":
-				state = "reacting to sad face"
+				state = "reacting to angry face"
 			elif expression is "happy":
 				state = "reacting to happy face"
+			else:
+				state = "finding face"
 
 		elif state is "reacting to sad face":
 
